@@ -7,8 +7,8 @@
 
 using namespace std;
 
-const int WINDOW_HEIGHT = 950;
-const int ITERATIONS = 800;
+const int WINDOW_HEIGHT = 900;
+const int ITERATIONS = 250;
 
 
 /*long double x0 = -2.5;
@@ -16,10 +16,10 @@ long double x1 = 1.0;
 long double y0 = -1.0;
 long double y1 = 1.0;*/
 
-long double x0 = -0.74364065-0.000012068;
+/*long double x0 = -0.74364065-0.000012068;
 long double x1 = -0.74364065+0.000012068;
 long double y0 = 0.13182733-0.000012068;
-long double y1 = 0.13182733+0.000012068;
+long double y1 = 0.13182733+0.000012068;*/
 
 
 /*long double x0 = -0.75914;
@@ -33,10 +33,10 @@ long double y0 = 0.131825904154031;
 long double y1 = 0.131825904256629;*/
 
 
-/*long double x0 = -0.738382593158;
+long double x0 = -0.738382593158;
 long double x1 = -0.736517264747;
 long double y0 = 0.207338038681;
-long double y1 = 0.207338038681+0.001865328411;*/
+long double y1 = 0.207338038681+0.001865328411;
 
 int width, height;
 
@@ -149,8 +149,8 @@ void renderScene() {
 	for (int x = 0; x < image.size(); ++x) {
 		for (int y = 0; y < image[x].size(); ++y) {
 			Color c = image[x][y];
-			//glColor3f(c.r, c.g, c.b);
-			glColor3f(c.percent, c.percent, c.percent);
+			glColor3f(c.r, c.g, c.b);
+			//glColor3f(c.percent, c.percent, c.percent);
 			glVertex3f(x, y, 0.0);
 		}
 	}
