@@ -5,16 +5,18 @@
 #include <map>
 #include <algorithm>
 
+#include "setup.h"
+
 using namespace std;
 
 const int WINDOW_HEIGHT = 900;
-const int ITERATIONS = 250;
+const int ITERATIONS = 100;
 
 
-/*long double x0 = -2.5;
+long double x0 = -2.5;
 long double x1 = 1.0;
 long double y0 = -1.0;
-long double y1 = 1.0;*/
+long double y1 = 1.0;
 
 /*long double x0 = -0.74364065-0.000012068;
 long double x1 = -0.74364065+0.000012068;
@@ -27,16 +29,10 @@ long double x1 = -0.72692;
 long double y0 = 0.126433;
 long double y1 = 0.142543;*/
 
-/*long double x0 = -0.743643887088449;
-long double x1 = -0.743643886985851;
-long double y0 = 0.131825904154031;
-long double y1 = 0.131825904256629;*/
-
-
-long double x0 = -0.738382593158;
+/*long double x0 = -0.738382593158;
 long double x1 = -0.736517264747;
 long double y0 = 0.207338038681;
-long double y1 = 0.207338038681+0.001865328411;
+long double y1 = 0.207338038681+0.001865328411;*/
 
 int width, height;
 
@@ -127,7 +123,7 @@ void recalc() {
 	
 	for (int x = 0; x < w; ++x) {
 		for (int y = 0; y < h; ++y)
-			tmp[x][y] = calc(x0 + (long double)x/(w-1)*(x1-x0) , y0 + (long double)y/(h-1)*(y1-y0));
+			tmp[x][y] = calc(x0 + (long double)x/(w-1)*(x1-x0), y0 + (long double)y/(h-1)*(y1-y0));
 	}
 	
 	if(minper != maxper) {
@@ -143,7 +139,7 @@ void recalc() {
 void renderScene() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
-	
+	/*glPointSize(5.0f);*/
 	glBegin(GL_POINTS);
 	
 	for (int x = 0; x < image.size(); ++x) {
@@ -163,14 +159,17 @@ void reshape(int w, int h) {
 	height = h;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0, 0, width, height);
-	glOrtho(0, width, height, 0, 0, 1);
+	glViewport(0, 0, w, h);
+	glOrtho(0, w, h, 0, 0, 1);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	recalc();
 }
 
 int main (int argc, char ** argv) {
+	// Load OpenCL-stuff
+	setup();
+	
 	color_map[0.00] = Color(0.00, 0.556862745098039, 0, 0);
 	color_map[0.25] = Color(0.25, 1, 0.780392156862745, 0.184313725490196);
 	color_map[0.50] = Color(0.50, 1, 1, 1);
