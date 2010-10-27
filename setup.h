@@ -1,7 +1,7 @@
 #ifndef SETUP_H_
 #define SETUP_H_
 
-#include <OpenCL/OpenCL.h>
+#include <OpenCL/opencl.h>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -17,8 +17,9 @@ extern cl_command_queue commands;
 extern cl_program program;
 extern cl_kernel kernel;
 
-extern cl_mem input;
 extern cl_mem output;
+
+extern size_t local, global;
 
 void setup();
 
