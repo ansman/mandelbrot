@@ -22,5 +22,7 @@ extern cl_mem output;
 extern size_t local, global;
 
 void setup();
+void check_error(cl_int err, int line, std::string file, std::string err_string = "");
+std::string get_error_string(cl_int err);
 
 #endif /* SETUP_H_ */
