@@ -14,12 +14,23 @@ CalcType xlength = 2.4;
 CalcType y0 = -1.2;
 CalcType ylength = 2.4;
 
-
-void calc() {
+void calc(int quality) {
 	cl_int err = 0;
 	
-	unsigned int sswidth  = width * 2;
-	unsigned int ssheight = height * 2;
+	float ssquality = 1.0f;
+	switch (quality) {
+		case CALC_QUALITY_LOW:
+			ssquality = 0.25f;
+			break;
+		case CALC_QUALITY_NORMAL:
+			ssquality = 1.0;
+			break;
+		case CALC_QUALITY_SUPERSAMPLE:
+			ssquality = 2.0f;
+	}
+	
+	unsigned int sswidth  = width * ssquality;
+	unsigned int ssheight = height * ssquality;
 	
 	cl_mem output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float) * sswidth * ssheight, NULL, &err);
 	
@@ -99,8 +110,37 @@ void reshape(int w, int h) {
 	glLoadIdentity();
 }
 
+int mouseX = 0;
+int mouseY = 0;
+void mouseDown(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		mouseX = x;
+		mouseY = y;
+	} else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		CalcType xc = x0 + ((CalcType) x / (CalcType) width) * xlength;
+		CalcType yc = y0 + ((CalcType) (height - y) / (CalcType) height) * ylength;
+				
+		xlength = xlength / 2.0f;
+		ylength = ylength / 2.0f;
+		x0 = xc - xlength / 2.0f;
+		y0 = yc - ylength / 2.0f;
+				
+		calc(CALC_QUALITY_SUPERSAMPLE);
+		glutPostRedisplay();
+	} else if (state == GLUT_UP) {
+		calc(CALC_QUALITY_SUPERSAMPLE);
+		glutPostRedisplay();
+	}
+}
+
 void mouseMove(int x, int y) {
+	x0 += ((CalcType) (mouseX - x) / (CalcType) width) * xlength;
+	y0 += ((CalcType) (y - mouseY) / (CalcType) height) * ylength;
+	mouseX = x;
+	mouseY = y;
 	
+	calc(CALC_QUALITY_LOW);
+	glutPostRedisplay();
 }
 
 int main (int argc, char ** argv) {
@@ -112,6 +152,7 @@ int main (int argc, char ** argv) {
 	
 	glutDisplayFunc(&render);
 	glutReshapeFunc(&reshape);
+	glutMouseFunc(&mouseDown);
 	glutMotionFunc(&mouseMove);
 	
 	glEnable(GL_TEXTURE_2D);
@@ -121,7 +162,7 @@ int main (int argc, char ** argv) {
 	// Load OpenCL-stuff
 	setup();
 	Coloration::setupColoration();
-	calc();
+	calc(CALC_QUALITY_SUPERSAMPLE);
 	
 	glutMainLoop();
 	return 0;
