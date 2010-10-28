@@ -17,10 +17,6 @@ extern cl_command_queue commands;
 extern cl_program program;
 extern cl_kernel kernel;
 
-extern cl_mem output;
-
-extern size_t local, global;
-
 void setup();
 void check_error(cl_int err, int line, std::string file, std::string err_string = "");
 std::string get_error_string(cl_int err);

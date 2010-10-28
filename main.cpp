@@ -1,70 +1,43 @@
-#include <vector>
-#include <iostream>
-#include <iomanip>
-#include <GLUT/GLUT.h>
-#include <map>
-#include <algorithm>
-
-#include "setup.h"
-
-#define CALC_TYPE float
+#include "main.h"
 
 using namespace std;
 
-const int WINDOW_HEIGHT = 768;
-const int WINDOW_WIDTH = 768;
-const char * WINDOW_TITLE = "Mandelbrot";
-const unsigned int ITERATIONS = 250;
+unsigned int width, height;
 
-int width, height;
+/*CalcType x0 = -0.74364065;
+CalcType xlength = 0.000012068*2000;
+CalcType y0 = 0.13182733;
+CalcType ylength = 0.000012068*2000;*/
 
-/*CALC_TYPE x0 = -1.5;
-CALC_TYPE xlength = 2;
-CALC_TYPE y0 = -1;
-CALC_TYPE ylength = 2;*/
+CalcType x0 = -1.9;
+CalcType xlength = 2.4;
+CalcType y0 = -1.2;
+CalcType ylength = 2.4;
 
-float x0 = -0.74364065;
-float xlength = 0.000012068*2000;
-float y0 = 0.13182733;
-float ylength = 0.000012068*2000;
-
-const int texid = 1;
-
-char * texture = NULL;
 
 void calc() {
-	// Call open cl
-	texture = (char *)malloc(width*3*height);
-	
-	cl_mem output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float) * width * height, NULL, NULL);
-	
-	if(!output) {
-		printf("Error: Failed to allocate device memory!\n");
-		exit(EXIT_FAILURE);
-	}
-	
-	CALC_TYPE stepx = xlength/width;
-	CALC_TYPE stepy = ylength/height;
-	
 	cl_int err = 0;
-	err  = clSetKernelArg(kernel, 0, sizeof(CALC_TYPE), &x0);
-	err |= clSetKernelArg(kernel, 1, sizeof(CALC_TYPE), &y0);
-	err |= clSetKernelArg(kernel, 2, sizeof(CALC_TYPE), &stepx);
-	err |= clSetKernelArg(kernel, 3, sizeof(CALC_TYPE), &stepy);
+	
+	cl_mem output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(float) * width * height, NULL, &err);
+	
+	if(!output)
+		check_error(err, __LINE__, "main.cpp");
+	
+	CalcType stepx = xlength/width;
+	CalcType stepy = ylength/height;
+	
+	err  = clSetKernelArg(kernel, 0, sizeof(CalcType), &x0);
+	err |= clSetKernelArg(kernel, 1, sizeof(CalcType), &y0);
+	err |= clSetKernelArg(kernel, 2, sizeof(CalcType), &stepx);
+	err |= clSetKernelArg(kernel, 3, sizeof(CalcType), &stepy);
 	err |= clSetKernelArg(kernel, 4, sizeof(unsigned int), &width);
 	err |= clSetKernelArg(kernel, 5, sizeof(unsigned int), &height);
 	err |= clSetKernelArg(kernel, 6, sizeof(unsigned int), &ITERATIONS);
 	err |= clSetKernelArg(kernel, 7, sizeof(cl_mem), &output);
 	check_error(err, __LINE__, "main.cpp");
 	
-	err = clGetKernelWorkGroupInfo(kernel, device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
-	check_error(err, __LINE__, "main.cpp");
-	
-	err = clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(global), &global, NULL);
-	check_error(err, __LINE__, "main.cpp");
 	
 	size_t global[2] = {width, height};
-	
 	err = clEnqueueNDRangeKernel(commands, kernel, 2, NULL, global, NULL, 0, NULL, NULL);
 	check_error(err, __LINE__, "main.cpp");
 	
@@ -75,39 +48,32 @@ void calc() {
 	err = clEnqueueReadBuffer(commands, output, CL_TRUE, 0, sizeof(float) * width * height, tmp, 0, NULL, NULL);  
 	check_error(err, __LINE__, "main.cpp");
 	
-	float min = 1, max = 0;
 	
-	for (int x = 0; x < width; ++x) {
-		for (int y = 0; y < height; ++y) {
-			if (tmp[(y*width + x)] < min)
-				min = tmp[(y*width + x)];
-			if (tmp[(y*width + x)] > max)
-				max = tmp[(y*width + x)];
-		}
-	}
+	for (unsigned int i = 0; preTextureProcessing[i] != NULL; ++i)
+		preTextureProcessing[i]->process(tmp, width, height, x0, y0, stepx, stepy);
 	
-	for (int x = 0; x < width; ++x) {
-		for (int y = 0; y < height; ++y) {
-			texture[(y*width + x)*3+0] = texture[(y*width + x)*3+1] = texture[(y*width + x)*3+2] = 255.0f*(tmp[(y*width + x)]-min)/(max-min);
-		}
-	}
+	color * texture = Coloration::applyColor(tmp, width, height);
 	
 	
-	glBindTexture(GL_TEXTURE_2D, texid);
+	for (unsigned int i = 0; postTextureProcessing[i] != NULL; ++i)
+		postTextureProcessing[i]->process(texture, width, height);
+	
+	glBindTexture(GL_TEXTURE_2D, TEX_ID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
-
+	
+	free(texture);
 }
 
 void render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	
-	glBindTexture(GL_TEXTURE_2D, texid);
+	glBindTexture(GL_TEXTURE_2D, TEX_ID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0, 0.0);
 	glVertex3f(0.0, 0.0, 0.0);
@@ -147,6 +113,7 @@ int main (int argc, char ** argv) {
 	height = WINDOW_HEIGHT;
 	// Load OpenCL-stuff
 	setup();
+	Coloration::setupColoration();
 	calc();
 	
 	glutMainLoop();

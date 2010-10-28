@@ -6,11 +6,6 @@ cl_command_queue commands;
 cl_program program;
 cl_kernel kernel;
 
-cl_mem input;
-cl_mem output;
-
-size_t local, global;
-
 void setup() {
 	cl_int err;
 	
