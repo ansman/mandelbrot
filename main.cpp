@@ -14,14 +14,19 @@ using namespace std;
 const int WINDOW_HEIGHT = 768;
 const int WINDOW_WIDTH = 768;
 const char * WINDOW_TITLE = "Mandelbrot";
-const unsigned int ITERATIONS = 1000;
+const unsigned int ITERATIONS = 250;
 
 int width, height;
 
-CALC_TYPE x0 = -1.5;
+/*CALC_TYPE x0 = -1.5;
 CALC_TYPE xlength = 2;
 CALC_TYPE y0 = -1;
-CALC_TYPE ylength = 2;
+CALC_TYPE ylength = 2;*/
+
+float x0 = -0.74364065;
+float xlength = 0.000012068*2000;
+float y0 = 0.13182733;
+float ylength = 0.000012068*2000;
 
 const int texid = 1;
 
@@ -70,9 +75,20 @@ void calc() {
 	err = clEnqueueReadBuffer(commands, output, CL_TRUE, 0, sizeof(float) * width * height, tmp, 0, NULL, NULL);  
 	check_error(err, __LINE__, "main.cpp");
 	
+	float min = 1, max = 0;
+	
 	for (int x = 0; x < width; ++x) {
 		for (int y = 0; y < height; ++y) {
-			texture[(y*width + x)*3+0] = texture[(y*width + x)*3+1] = texture[(y*width + x)*3+2] = 255.0f*tmp[(y*width + x)];
+			if (tmp[(y*width + x)] < min)
+				min = tmp[(y*width + x)];
+			if (tmp[(y*width + x)] > max)
+				max = tmp[(y*width + x)];
+		}
+	}
+	
+	for (int x = 0; x < width; ++x) {
+		for (int y = 0; y < height; ++y) {
+			texture[(y*width + x)*3+0] = texture[(y*width + x)*3+1] = texture[(y*width + x)*3+2] = 255.0f*(tmp[(y*width + x)]-min)/(max-min);
 		}
 	}
 	

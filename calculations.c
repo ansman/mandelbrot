@@ -24,5 +24,5 @@ __kernel mandelcalc(float xs, float ys, float stepx, float stepy, unsigned int w
 		++iteration;
 	}
 	
-	output[xt + yt*width] = (float)iteration;
+	output[xt + yt*width] = (float)iteration/(float)iterations;
 }
