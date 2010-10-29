@@ -26,7 +26,7 @@ void calc(int quality) {
 			ssquality = 1.0;
 			break;
 		case CALC_QUALITY_SUPERSAMPLE:
-			ssquality = 2.0f;
+			ssquality = 1.0f;
 	}
 	
 	unsigned int sswidth  = width * ssquality;

@@ -15,8 +15,6 @@ const int TEX_ID = 1;
 #include "pre_texture.h"
 #include "post_texture.h"
 
-#include "hdr.h"
-
 class PreTexture;
 class PostTexture;
 extern PreTexture * preTextureProcessing[];

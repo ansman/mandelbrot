@@ -1,13 +1,6 @@
 #include "coloration.h"
 
 namespace Coloration {
-	struct Color {
-		float percent;
-		color r, g, b;
-		Color() : percent(0.0f), r(0.0f), g(0.0f), b(0.0f) {}
-		Color(float percent, color r, color g, color b) : percent(percent), r(r), g(g), b(b) {}
-	};
-	
 	int colorationSetup = 0;
 	std::map<float, Color> colorMap;
 	

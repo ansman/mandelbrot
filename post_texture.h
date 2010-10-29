@@ -5,7 +5,7 @@
 
 class PostTexture {
 public:
-	virtual void process(color * data, unsigned int width, unsigned int height) = 0;
+	virtual void process(color * data, unsigned int width, unsigned int height) const = 0;
 };
 
 #endif /* POST_TEXTURE_H_ */
