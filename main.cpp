@@ -79,6 +79,7 @@ void calc(int quality) {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sswidth, ssheight, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
 	
+	clReleaseMemObject(output);
 	free(texture);
 }
 

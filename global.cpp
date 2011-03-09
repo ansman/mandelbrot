@@ -10,6 +10,6 @@ PreTexture * preTextureProcessing[] = {
 #include "supersampling.h"
 
 PostTexture * postTextureProcessing[] = {
-	new Supersampling(),
+	//new Supersampling(),
 	NULL
 };

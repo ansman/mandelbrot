@@ -9,7 +9,7 @@
 
 #define USE_GPU true
 
-#define programFile "../../calculations.c"
+#define programFile "calculations.c"
 
 extern cl_device_id device_id;
 extern cl_context context;
