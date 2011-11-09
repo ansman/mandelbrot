@@ -1,6 +1,6 @@
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-__kernel mandelcalc(float xs, float ys, float stepx, float stepy, unsigned int width, unsigned int height, const unsigned int iterations, __global float * output) {
+__kernel void mandelcalc(float xs, float ys, float stepx, float stepy, unsigned int width, unsigned int height, const unsigned int iterations, __global float * output) {
 	int xt = get_global_id(0);
 	int yt = get_global_id(1);
 	
