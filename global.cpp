@@ -3,13 +3,13 @@
 #include "hdr.h"
 
 PreTexture * preTextureProcessing[] = {
-	new HDR(),
-	NULL
+    new HDR(),
+    NULL
 };
 
 #include "supersampling.h"
 
 PostTexture * postTextureProcessing[] = {
-	//new Supersampling(),
-	NULL
+    //new Supersampling(),
+    NULL
 };
