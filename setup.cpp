@@ -8,40 +8,40 @@ cl_kernel kernel;
 
 void setup() {
     cl_int err;
-    
+
     err = clGetDeviceIDs(NULL, USE_GPU ? CL_DEVICE_TYPE_GPU : CL_DEVICE_TYPE_CPU, 1, &device_id, NULL);
     check_error(err, __LINE__, "setup.cpp");
-    
+
     context = clCreateContext(0, 1, &device_id, NULL, NULL, &err);
     if (!context)
         check_error(err, __LINE__, "setup.cpp");
-    
+
     commands = clCreateCommandQueue(context, device_id, 0, &err);
     if (!commands)
         check_error(err, __LINE__, "setup.cpp");
-    
+
     std::ifstream file(programFile, std::ios_base::binary);
-    
+
     check_error(file.is_open() ? CL_SUCCESS : -1, __LINE__, "setup.cpp", "Failed to open file");
-    
+
     std::string prog(std::istreambuf_iterator<char>(file), (std::istreambuf_iterator<char>()));
     const char * s = prog.c_str();
-    
+
     program = clCreateProgramWithSource(context, 1, (const char **) &s, NULL, &err);
     if (!program)
         check_error(err, __LINE__, "setup.cpp");
-    
+
     err = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
     if (err != CL_SUCCESS) {
         size_t len;
         char buffer[2048];
-        
+
         std::cerr << "Error: " << get_error_string(err) << std::endl;
         clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
         std::cerr << buffer << std::endl;
         exit(1);
     }
-    
+
     kernel = clCreateKernel(program, "mandelcalc", &err);
     if (!kernel || err != CL_SUCCESS)
         check_error(err, __LINE__, "setup.cpp");
@@ -51,10 +51,10 @@ void setup() {
 void check_error(cl_int err, int line, std::string file, std::string err_string) {
     if(err == CL_SUCCESS)
         return;
-        
+
     if(err_string == "")
         err_string = get_error_string(err);
-    
+
     std::cerr << "Error in " << file << ':' << line << std::endl;
     std::cerr << err_string << std::endl;
     exit(EXIT_FAILURE);
@@ -112,3 +112,4 @@ std::string get_error_string(cl_int err) {
         default:                                  return strdup("Unknown");
     }
 }
+
