@@ -1,4 +1,4 @@
-CC = g++
+CC = clang++
 CFLAGS = -Wall -pedantic
 LDFLAGS = -framework GLUT -framework OpenGL -framework OpenCL
 DEBUG_FLAGS = -g
