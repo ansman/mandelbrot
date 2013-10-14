@@ -9,7 +9,7 @@
 class Supersampling : public PostTexture {
     static const int SUB_PIXEL_SIZE = 4;
 
-    bool getColor(color * data, unsigned int index, unsigned int size, Coloration::Color & c) const;
+    bool getColor(color * data, int index, unsigned int size, Coloration::Color & c) const;
 
 public:
     virtual void process(color * data, unsigned int width, unsigned int height) const;

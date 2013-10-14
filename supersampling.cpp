@@ -28,8 +28,8 @@ void Supersampling::process(color * data, unsigned int width, unsigned int heigh
     free(tempdata);
 }
 
-bool Supersampling::getColor(color * data, unsigned int index, unsigned int size, Coloration::Color & c) const {
-    if (index < 0 || index >= size)
+bool Supersampling::getColor(color * data, int index, unsigned int size, Coloration::Color & c) const {
+    if (index < 0 || (unsigned int) index >= size)
         return false;
 
     c.r = data[index*3 + 0];
