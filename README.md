@@ -26,3 +26,7 @@ Navigating
 ---
 Click and drag to move and right click to zoom in.
 Currently you can't zoom out :(
+
+Screenshot
+---
+![Mandelbrot](https://s3.amazonaws.com/f.cl.ly/items/0N1C2E2y0K190D410w11/Screen%20Shot%202013-10-14%20at%2015.38.26.png)
